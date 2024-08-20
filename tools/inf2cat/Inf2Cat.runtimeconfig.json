@@ -1,0 +1,13 @@
+{
+  "runtimeOptions": {
+    "tfm": "net8.0",
+    "framework": {
+      "name": "Microsoft.NETCore.App",
+      "version": "8.0.8"
+    },
+    "configProperties": {
+      "System.Runtime.TieredCompilation.QuickJit": false,
+      "System.Threading.ThreadPool.MinThreads": 8
+    }
+  }
+}

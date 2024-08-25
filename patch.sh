@@ -1,22 +1,22 @@
 #!/bin/bash
 
-BASEDIR=$(dirname $0)
-VER_TARGET=560.94
-DriverDir=${VER_TARGET}-desktop-win10-win11-64bit-international-dch-whql
-DisplayDriverDir=${BASEDIR}/${DriverDir}/Display.Driver
-displaydriverDir=${BASEDIR}/${DriverDir}/display.driver
-
-curl \
-"https://cn.download.nvidia.com/Windows/${VER_TARGET}/${DriverDir}.exe" \
--o ${DriverDir}.exe
-[ -e "${DriverDir}.exe" ] || echo "nvidia windows driver installer not found"
-md5sum ${DriverDir}.exe
-
-which 7z &>/dev/null || echo "have not install p7zip-full for 7z tool (http://p7zip.sourceforge.net/)"
-which msexpand &>/dev/null || echo "have not install mscompress (https://github.com/stapelberg/mscompress)"
-
-echo "extracting the driver installer, please wait..."
-7z x -o${DriverDir} "${DriverDir}.exe" > unzip.log
+#BASEDIR=$(dirname $0)
+#VER_TARGET=560.94
+#DriverDir=${VER_TARGET}-desktop-win10-win11-64bit-international-dch-whql
+#DisplayDriverDir=${BASEDIR}/${DriverDir}/Display.Driver
+#displaydriverDir=${BASEDIR}/${DriverDir}/display.driver
+#
+#curl \
+#"https://cn.download.nvidia.com/Windows/${VER_TARGET}/${DriverDir}.exe" \
+#-o ${DriverDir}.exe
+#[ -e "${DriverDir}.exe" ] || echo "nvidia windows driver installer not found"
+#md5sum ${DriverDir}.exe
+#
+#which 7z &>/dev/null || echo "have not install p7zip-full for 7z tool (http://p7zip.sourceforge.net/)"
+#which msexpand &>/dev/null || echo "have not install mscompress (https://github.com/stapelberg/mscompress)"
+#
+#echo "extracting the driver installer, please wait..."
+#7z x -o${DriverDir} "${DriverDir}.exe" > unzip.log
 
 LANG=C
 AllList=`find -iname '*.sys' -o -iname '*.dll'`
@@ -93,28 +93,28 @@ do {
 done
 wait
 
-mv ${DisplayDriverDir} ${displaydriverDir}
-for i in $( find ${displaydriverDir} -maxdepth 1 -name "*[A-Z]*" ); do mv -if "$i" "`echo $i | tr 'A-Z' 'a-z'`"; done
-for i in $( find ${displaydriverDir} -maxdepth 2 -name "*[A-Z]*" ); do mv -if "$i" "`echo $i | tr 'A-Z' 'a-z'`"; done
-for i in $( find ${displaydriverDir} -maxdepth 3 -name "*[A-Z]*" ); do mv -if "$i" "`echo $i | tr 'A-Z' 'a-z'`"; done
-for i in $( find ${displaydriverDir} -maxdepth 4 -name "*[A-Z]*" ); do mv -if "$i" "`echo $i | tr 'A-Z' 'a-z'`"; done
-#tree .
-#ls -l ${displaydriverDir}/
-#echo ${displaydriverDir}
-#pwd
-dotnet ${BASEDIR}/tools/inf2cat/Inf2Cat.exe /driver:"${displaydriverDir}" /os:10_x64 /verbose
-mv ${displaydriverDir} ${DisplayDriverDir}
-#osslsigncode sign -pkcs12 tools/cert.pfx -pass "GreenDamTan" \
-#    -n "nikki" -t http://timestamp.digicert.com \
-#    -jp low \
-#    -in ${DisplayDriverDir}/nv_disp.cat \
-#    -out ${DisplayDriverDir}/nv_disp.cat
-#mkdir ~/.wine
-#chown -R $USER: ~/.wine
-#winetricks -q mfc42
-#sudo wine ${BASEDIR}/tools/signtool/signtool.exe sign /f tools/cert.pfx \
-#        /p GreenDamTan /a /fd sha256 \
-#        /t http://timestamp.digicert.com \
-#        ${DisplayDriverDir}/nv_disp.cat
- jsign --keystore tools/cert.pfx --storetype PKCS12 --storepass GreenDamTan \
-       --tsaurl http://timestamp.digicert.com ${DisplayDriverDir}/nv_disp.cat
+#mv ${DisplayDriverDir} ${displaydriverDir}
+#for i in $( find ${displaydriverDir} -maxdepth 1 -name "*[A-Z]*" ); do mv -if "$i" "`echo $i | tr 'A-Z' 'a-z'`"; done
+#for i in $( find ${displaydriverDir} -maxdepth 2 -name "*[A-Z]*" ); do mv -if "$i" "`echo $i | tr 'A-Z' 'a-z'`"; done
+#for i in $( find ${displaydriverDir} -maxdepth 3 -name "*[A-Z]*" ); do mv -if "$i" "`echo $i | tr 'A-Z' 'a-z'`"; done
+#for i in $( find ${displaydriverDir} -maxdepth 4 -name "*[A-Z]*" ); do mv -if "$i" "`echo $i | tr 'A-Z' 'a-z'`"; done
+##tree .
+##ls -l ${displaydriverDir}/
+##echo ${displaydriverDir}
+##pwd
+#dotnet ${BASEDIR}/tools/inf2cat/Inf2Cat.exe /driver:"${displaydriverDir}" /os:10_x64 /verbose
+#mv ${displaydriverDir} ${DisplayDriverDir}
+##osslsigncode sign -pkcs12 tools/cert.pfx -pass "GreenDamTan" \
+##    -n "nikki" -t http://timestamp.digicert.com \
+##    -jp low \
+##    -in ${DisplayDriverDir}/nv_disp.cat \
+##    -out ${DisplayDriverDir}/nv_disp.cat
+##mkdir ~/.wine
+##chown -R $USER: ~/.wine
+##winetricks -q mfc42
+##sudo wine ${BASEDIR}/tools/signtool/signtool.exe sign /f tools/cert.pfx \
+##        /p GreenDamTan /a /fd sha256 \
+##        /t http://timestamp.digicert.com \
+##        ${DisplayDriverDir}/nv_disp.cat
+# jsign --keystore tools/cert.pfx --storetype PKCS12 --storepass GreenDamTan \
+#       --tsaurl http://timestamp.digicert.com ${DisplayDriverDir}/nv_disp.cat

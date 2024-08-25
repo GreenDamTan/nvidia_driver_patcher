@@ -90,6 +90,10 @@ jobs:
           dotnet ${BASEDIR}/tools/inf2cat/Inf2Cat.exe /driver:"${displaydriverDir}" /os:10_x64 /verbose
           mv ${displaydriverDir} ${DisplayDriverDir}
           jsign --keystore tools/cert.pfx --storetype PKCS12 --storepass GreenDamTan --tsaurl http://timestamp.digicert.com ${DisplayDriverDir}/nv_disp.cat
+      - name: tree
+        run: |
+          pwd
+          tree .
       - name: Upload artifact
         uses: actions/upload-artifact@master
         with:

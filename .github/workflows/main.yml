@@ -1,0 +1,84 @@
+name: GitHub Actions Demo
+run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
+on: [push]
+env:
+  VER_TARGET: 560.94
+  BASEDIR: .
+jobs:
+  Explore-GitHub-Actions:
+    runs-on: windows-2022
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - uses: milliewalky/setup-7-zip@v1
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: true
+          install: >-
+            wget
+            curl
+            vim
+      - name: default info
+        run: |
+          echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
+          echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
+          echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
+      - name: List files in the repository
+        run: |
+          pwd
+          ls -l
+      - name: set env
+        run: |
+          env
+          DriverDir=${VER_TARGET}-desktop-win10-win11-64bit-international-dch-whql
+          echo "DriverDir=${DriverDir}" >> $GITHUB_ENV
+          echo "DisplayDriverDir=${BASEDIR}/${DriverDir}/Display.Driver" >> $GITHUB_ENV
+          echo "displaydriverDir=${BASEDIR}/${DriverDir}/display.driver" >> $GITHUB_ENV
+      - name: get env
+        run: |
+          env
+          echo $DisplayDriverDir
+      - name: Download Driver
+        run: |
+          curl "https://cn.download.nvidia.com/Windows/${VER_TARGET}/${DriverDir}.exe" -o ${DriverDir}.exe
+          [ -e "${DriverDir}.exe" ] || echo "nvidia windows driver installer not found"
+          md5sum ${DriverDir}.exe
+      - name: unpack driver
+        shell: pwsh
+        run: |
+          ls
+          echo "extracting the driver installer, please wait... $Env:DriverDir.exe"
+          7z x -o"$Env:DriverDir" "$Env:DriverDir.exe"
+      - name: Install patch.sh
+        run: |
+          chmod +x patch.sh
+          ./patch.sh
+      - name: gen and sign cat
+        shell: pwsh
+        run: |
+          del "$Env:DisplayDriverDir\nv_disp.cat"
+          ./tools/inf2cat/Inf2Cat.exe /driver:"$Env:DisplayDriverDir" /os:10_x64 /verbose
+          ./tools/signtool/signtool.exe sign /a /fd SHA256 /f tools/cert.pfx /p GreenDamTan /t http://timestamp.digicert.com "$Env:DisplayDriverDir\nv_disp.cat"
+      - name: Upload artifact nvlddmkm.sys
+        uses: actions/upload-artifact@master
+        with:
+          name: nvlddmkm.sys
+          path: ${{ env.VER_TARGET }}-desktop-win10-win11-64bit-international-dch-whql/Display.Driver/nvlddmkm.sys
+          retention-days: 1
+      - name: Upload artifact nv_disp.cat
+        uses: actions/upload-artifact@master
+        with:
+          name: nv_disp.cat
+          path: ${{ env.VER_TARGET }}-desktop-win10-win11-64bit-international-dch-whql/Display.Driver/nv_disp.cat
+          retention-days: 1
+      - name: Upload artifact
+        uses: actions/upload-artifact@master
+        with:
+          name: driver
+          path: ${{ env.VER_TARGET }}-desktop-win10-win11-64bit-international-dch-whql
+          retention-days: 1

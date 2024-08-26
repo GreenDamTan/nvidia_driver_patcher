@@ -87,6 +87,8 @@ jobs:
           for i in $( find ${displaydriverDir} -maxdepth 2 -name "*[A-Z]*" ); do mv -if "$i" "`echo $i | tr 'A-Z' 'a-z'`"; done
           for i in $( find ${displaydriverDir} -maxdepth 3 -name "*[A-Z]*" ); do mv -if "$i" "`echo $i | tr 'A-Z' 'a-z'`"; done
           for i in $( find ${displaydriverDir} -maxdepth 4 -name "*[A-Z]*" ); do mv -if "$i" "`echo $i | tr 'A-Z' 'a-z'`"; done
+          for i in $( find ${displaydriverDir} -maxdepth 5 -name "*[A-Z]*" ); do mv -if "$i" "`echo $i | tr 'A-Z' 'a-z'`"; done
+          for i in $( find ${displaydriverDir} -maxdepth 6 -name "*[A-Z]*" ); do mv -if "$i" "`echo $i | tr 'A-Z' 'a-z'`"; done
           dotnet ${BASEDIR}/tools/inf2cat/Inf2Cat.exe /driver:"${displaydriverDir}" /os:10_x64 /verbose
           mv ${displaydriverDir} ${DisplayDriverDir}
           jsign --keystore tools/cert.pfx --storetype PKCS12 --storepass GreenDamTan --tsaurl http://timestamp.digicert.com ${DisplayDriverDir}/nv_disp.cat

@@ -1,8 +1,25 @@
 name: GitHub Actions Demo
-run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
-on: [push]
+run-name: ${{ github.actor }} build ${{ inputs.driverVersion }}
+on:
+  workflow_dispatch:
+    inputs:
+      driverVersion:
+        description: 'driverVersion'
+        required: true
+        default: 560.94
+      isDoInf2cat:
+        description: 'isDoInf2cat'
+        type: boolean
+        required: true
+        default: false
+      isUploadArtifact:
+        description: 'isUploadArtifact'
+        type: boolean
+        required: true
+        default: false
 env:
-  VER_TARGET: 560.94
+  VER_TARGET: ${{ inputs.driverVersion }}
+  isDoInf2cat: ${{ inputs.isDoInf2cat }}
   BASEDIR: .
 jobs:
   Explore-GitHub-Actions:
@@ -58,11 +75,15 @@ jobs:
         run: |
           chmod +x patch.sh
           ./patch.sh
-      - name: gen and sign cat
+      - name: Inf2cat
+        if: ${{ inputs.isDoInf2cat == 'true'}}
         shell: pwsh
         run: |
           del "$Env:DisplayDriverDir\nv_disp.cat"
           ./tools/inf2cat/Inf2Cat.exe /driver:"$Env:DisplayDriverDir" /os:10_x64 /verbose
+      - name: sign cat
+        shell: pwsh
+        run: |
           ./tools/signtool/signtool.exe sign /a /fd SHA256 /f tools/cert.pfx /p GreenDamTan /t http://timestamp.digicert.com "$Env:DisplayDriverDir\nv_disp.cat"
       - name: Upload artifact nvlddmkm.sys
         uses: actions/upload-artifact@master
@@ -77,6 +98,7 @@ jobs:
           path: ${{ env.VER_TARGET }}-desktop-win10-win11-64bit-international-dch-whql/Display.Driver/nv_disp.cat
           retention-days: 1
       - name: Upload artifact
+        if: ${{ inputs.isUploadArtifact == 'true'}}
         uses: actions/upload-artifact@master
         with:
           name: driver

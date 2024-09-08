@@ -85,6 +85,10 @@ jobs:
         run: |
           chmod +x nv_dispi.sh
           ./nv_dispi.sh
+      - name: nvlti.inf device add
+        run: |
+          chmod +x nvlti.sh
+          ./nvlti.sh
       - name: Inf2cat
         if: ${{ inputs.isDoInf2cat == 'true'}}
         shell: pwsh
@@ -102,11 +106,17 @@ jobs:
           name: nvlddmkm.sys
           path: ${{ env.VER_TARGET }}-desktop-win10-win11-64bit-international-dch-whql/Display.Driver/nvlddmkm.sys
           retention-days: 1
-      - name: Upload artifact nv_dispwi.inf
+      - name: Upload artifact nv_dispi.inf
         uses: actions/upload-artifact@master
         with:
           name: nv_dispi.inf
           path: ${{ env.VER_TARGET }}-desktop-win10-win11-64bit-international-dch-whql/Display.Driver/nv_dispi.inf
+          retention-days: 1
+      - name: Upload artifact nvlti.inf
+        uses: actions/upload-artifact@master
+        with:
+          name: nvlti.inf
+          path: ${{ env.VER_TARGET }}-desktop-win10-win11-64bit-international-dch-whql/Display.Driver/nvlti.inf
           retention-days: 1
       - name: Upload artifact nv_disp.cat
         if: ${{ inputs.isDoInf2cat == 'true'}}

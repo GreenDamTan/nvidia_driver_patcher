@@ -17,6 +17,11 @@ on:
         type: boolean
         required: true
         default: false
+      isPatchDllSys:
+        description: 'isPatchDllSys'
+        type: boolean
+        required: true
+        default: true
 env:
   VER_TARGET: ${{ inputs.driverVersion }}
   isDoInf2cat: ${{ inputs.isDoInf2cat }}
@@ -72,9 +77,14 @@ jobs:
           echo "extracting the driver installer, please wait... $Env:DriverDir.exe"
           7z x -o"$Env:DriverDir" "$Env:DriverDir.exe"
       - name: Install patch.sh
+        if: ${{ inputs.isPatchDllSys == 'true'}}
         run: |
           chmod +x patch.sh
           ./patch.sh
+      - name: nv_dispi.inf device add
+        run: |
+          chmod +x nv_dispi.sh
+          ./nv_dispi.sh
       - name: Inf2cat
         if: ${{ inputs.isDoInf2cat == 'true'}}
         shell: pwsh
@@ -86,12 +96,20 @@ jobs:
         run: |
           ./tools/signtool/signtool.exe sign /a /fd SHA256 /f tools/cert.pfx /p GreenDamTan /t http://timestamp.digicert.com "$Env:DisplayDriverDir\nv_disp.cat"
       - name: Upload artifact nvlddmkm.sys
+        if: ${{ inputs.isPatchDllSys == 'true'}}
         uses: actions/upload-artifact@master
         with:
           name: nvlddmkm.sys
           path: ${{ env.VER_TARGET }}-desktop-win10-win11-64bit-international-dch-whql/Display.Driver/nvlddmkm.sys
           retention-days: 1
+      - name: Upload artifact nv_dispwi.inf
+        uses: actions/upload-artifact@master
+        with:
+          name: nv_dispi.inf
+          path: ${{ env.VER_TARGET }}-desktop-win10-win11-64bit-international-dch-whql/Display.Driver/nv_dispi.inf
+          retention-days: 1
       - name: Upload artifact nv_disp.cat
+        if: ${{ inputs.isDoInf2cat == 'true'}}
         uses: actions/upload-artifact@master
         with:
           name: nv_disp.cat
